@@ -1,9 +1,18 @@
 import functools
 import os
 from multiprocessing.pool import ThreadPool
+from threading import Lock
 
 import requests
 import mastodon
+
+
+s_print_lock = Lock()
+
+def s_print(*args, **kwargs):
+    with s_print_lock:
+        print(*args, **kwargs)
+
 
 class MediaFetcher(mastodon.StreamListener):
 
@@ -11,10 +20,11 @@ class MediaFetcher(mastodon.StreamListener):
         super().__init__()
         self.api = api
         me = api.account_verify_credentials()
-        print(f'I am {me.acct}')
+        s_print(f'I am {me.acct}')
 
     def on_update(self, status):
-        print(status.id)
+        s_print(status.id)
+
         medias = status.media_attachments
         for media in medias:
             res = requests.head(media.url)
@@ -22,7 +32,7 @@ class MediaFetcher(mastodon.StreamListener):
 
 
 def stream_thread(target_function, listener):
-    print(target_function.__name__)
+    s_print(target_function.__name__)
     target_function(listener, reconnect_async=True)
 
 MASTODON_URL=os.getenv('MASTODON_URL')

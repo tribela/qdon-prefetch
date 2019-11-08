@@ -23,21 +23,23 @@ class MediaFetcher(mastodon.StreamListener):
         s_print(f'I am {me.acct}')
 
     def on_update(self, status):
-        s_print(status.id)
+        s_print(f'{status.id} {len(status.media_attachments)}')
 
         if status.reblog is not None:
             status = status.reblog
-            s_print(f'Reblog of {status.id}')
+            s_print(f'Reblog of {status.id} {len(status.media_attachments)}')
 
         medias = status.media_attachments
+        if medias:
+            s_print(f'Downloading {len(medias)} medias')
         for media in medias:
-            fetch(media.url)
-            fetch(media.preview_url)
+            self.fetch(media.url)
+            self.fetch(media.preview_url)
 
     @staticmethod
     def fetch(url):
-        res = requests.head(url)
-        s_print(f'{media.url} {res.reason} {res.headers["CF-Cache-Status"]}')
+        res = requests.get(url)
+        s_print(f'{url} {res.reason} {res.headers["CF-Cache-Status"]}')
 
 
 def stream_thread(target_function, listener):

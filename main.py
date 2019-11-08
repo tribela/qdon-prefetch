@@ -25,10 +25,19 @@ class MediaFetcher(mastodon.StreamListener):
     def on_update(self, status):
         s_print(status.id)
 
+        if status.reblog is not None:
+            status = status.reblog
+            s_print(f'Reblog of {status.id}')
+
         medias = status.media_attachments
         for media in medias:
-            res = requests.head(media.url)
-            print(f'{media.url} {res.reason} {res.headers["CF-Cache-Status"]}')
+            fetch(media.url)
+            fetch(media.preview_url)
+
+    @staticmethod
+    def fetch(url):
+        res = requests.head(url)
+        s_print(f'{media.url} {res.reason} {res.headers["CF-Cache-Status"]}')
 
 
 def stream_thread(target_function, listener):

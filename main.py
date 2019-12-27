@@ -40,7 +40,7 @@ class MediaFetcher(mastodon.StreamListener):
     @staticmethod
     def fetch(url):
         res = requests.get(url)
-        s_print(f'{url} {res.reason} {res.headers["CF-Cache-Status"]}')
+        s_print(f'{url} {res.reason} {res.headers["CF-Cache-Status"]} {res.headers["CF-Ray"]}')
 
 
 def stream_thread(target_function, listener):

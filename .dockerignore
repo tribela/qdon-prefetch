@@ -1,0 +1,7 @@
+.direnv/
+.env
+.envrc
+.git
+
+Dockerfile
+docker-compose.yml

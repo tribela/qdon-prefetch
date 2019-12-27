@@ -1,0 +1,18 @@
+version: '3.7'
+
+services:
+  worker:
+    image: 127.0.0.1:5000/qdon-prefetch
+    build: .
+    env_file: .env
+    secrets:
+      - source: qdon-prefetch_url
+        target: MASTODON_URL
+      - source: qdon-prefetch_token
+        target: MASTODON_ACCESS_TOKEN
+
+secrets:
+  qdon-prefetch_url:
+    external: true
+  qdon-prefetch_token:
+    external: true

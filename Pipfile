@@ -8,6 +8,7 @@ verify_ssl = true
 [packages]
 mastodon-py = "*"
 requests = "*"
+get-docker-secret = "*"
 
 [requires]
 python_version = "3.7"

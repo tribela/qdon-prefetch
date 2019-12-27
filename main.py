@@ -1,10 +1,11 @@
 import functools
-import os
 from multiprocessing.pool import ThreadPool
 from threading import Lock
 
 import requests
 import mastodon
+
+from get_docker_secret import get_docker_secret
 
 
 s_print_lock = Lock()
@@ -46,8 +47,8 @@ def stream_thread(target_function, listener):
     s_print(target_function.__name__)
     target_function(listener, reconnect_async=True)
 
-MASTODON_URL=os.getenv('MASTODON_URL')
-ACCESS_TOKEN=os.getenv('MASTODON_ACCESS_TOKEN')
+MASTODON_URL=get_docker_secret('MASTODON_URL')
+ACCESS_TOKEN=get_docker_secret('MASTODON_ACCESS_TOKEN')
 
 api = mastodon.Mastodon(
     api_base_url=MASTODON_URL,

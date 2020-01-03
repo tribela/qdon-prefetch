@@ -10,6 +10,7 @@ from get_docker_secret import get_docker_secret
 
 s_print_lock = Lock()
 
+
 def s_print(*args, **kwargs):
     with s_print_lock:
         print(*args, **kwargs)
@@ -40,15 +41,18 @@ class MediaFetcher(mastodon.StreamListener):
     @staticmethod
     def fetch(url):
         res = requests.get(url)
-        s_print(f'{url} {res.reason} {res.headers["CF-Cache-Status"]} {res.headers["CF-Ray"]}')
+        s_print(
+            f'{url} {res.reason}'
+            f' {res.headers["CF-Cache-Status"]} {res.headers["CF-Ray"]}')
 
 
 def stream_thread(target_function, listener):
     s_print(target_function.__name__)
     target_function(listener, reconnect_async=True)
 
-MASTODON_URL=get_docker_secret('MASTODON_URL')
-ACCESS_TOKEN=get_docker_secret('MASTODON_ACCESS_TOKEN')
+
+MASTODON_URL = get_docker_secret('MASTODON_URL')
+ACCESS_TOKEN = get_docker_secret('MASTODON_ACCESS_TOKEN')
 
 api = mastodon.Mastodon(
     api_base_url=MASTODON_URL,
@@ -59,6 +63,13 @@ streams = [
     api.stream_user,
     api.stream_public,
 ]
-pool = ThreadPool(len(streams))
-pool.map(functools.partial(stream_thread, listener=listener), streams)
-pool.join()
+
+while True:
+    pool = ThreadPool(len(streams))
+    try:
+        pool.map(functools.partial(stream_thread, listener=listener), streams)
+    except mastodon.MastodonNetworkError:
+        pool.terminate()
+        continue
+    finally:
+        pool.join()

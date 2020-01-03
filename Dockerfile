@@ -5,4 +5,4 @@ ADD . /src
 WORKDIR /src
 RUN pipenv install --system --deploy
 
-CMD python -u main.py
+CMD ["python", "-u", "main.py"]

@@ -2,9 +2,12 @@ version: '3.7'
 
 services:
   worker:
-    image: 127.0.0.1:5000/qdon-prefetch
+    image: kjwon15/qdon-prefetch
     build: .
     env_file: .env
+    deploy:
+      update_config:
+        order: start-first
     secrets:
       - source: qdon-prefetch_url
         target: MASTODON_URL

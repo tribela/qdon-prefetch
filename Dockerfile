@@ -1,8 +1,12 @@
-FROM python:3.7-alpine
+FROM python:3.9
 
-RUN pip install pipenv
-ADD . /src
+ENV PYTHON_UNBUFFERED=1
+ENV PATH="${HOME}/.poetry/bin:${PATH}"
+RUN pip install poetry
 WORKDIR /src
-RUN pipenv install --system --deploy
+COPY poetry.lock pyproject.toml /src/
+RUN poetry config virtualenvs.create false \
+        && poetry install --no-dev --no-interaction --no-ansi
+ADD . /src
 
 CMD ["python", "-u", "main.py"]

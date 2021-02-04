@@ -1,12 +1,15 @@
 FROM python:3.9
 
 ENV PYTHON_UNBUFFERED=1
-ENV PATH="${HOME}/.poetry/bin:${PATH}"
-RUN pip install poetry
+ENV PYTHONFAULTHANDLER=1
+ENV PYTHONHASHSEED=1
+
 WORKDIR /src
 COPY poetry.lock pyproject.toml /src/
-RUN poetry config virtualenvs.create false \
-        && poetry install --no-dev --no-interaction --no-ansi
+RUN pip install poetry \
+    && poetry config virtualenvs.create false \
+    && poetry install --no-dev --no-interaction --no-ansi \
+    && pip uninstall --yes poetry
 ADD . /src
 
 CMD ["python", "-u", "main.py"]

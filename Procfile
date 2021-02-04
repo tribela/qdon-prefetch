@@ -1,1 +1,1 @@
-runner: env PYTHON_UNBUFFERED=1 python main.py
+runner: env PYTHONUNBUFFERED=1 python main.py

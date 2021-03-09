@@ -42,7 +42,7 @@ class MediaFetcher(mastodon.StreamListener):
     def fetch(url):
         res = requests.get(url)
         s_print(
-            f'{url} {res.reason}'
+            f'{res.url} {res.reason}'
             f' {res.elapsed.total_seconds():.3f}'
             f' {res.headers["CF-Cache-Status"]} {res.headers["CF-Ray"]}')
 

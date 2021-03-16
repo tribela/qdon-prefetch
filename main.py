@@ -41,10 +41,17 @@ class MediaFetcher(mastodon.StreamListener):
     @staticmethod
     def fetch(url):
         res = requests.get(url)
+        if res.headers['Server'] == 'cloudflare':
+            cache_status = res.headers['CF-Cache-Status']
+            ray = res.headers['CF-Ray']
+        else:
+            cache_status = ''
+            ray = ''
+
         s_print(
             f'{res.url} {res.reason}'
             f' {res.elapsed.total_seconds():.3f}'
-            f' {res.headers["CF-Cache-Status"]} {res.headers["CF-Ray"]}')
+            f' {cache_status} {ray}')
 
 
 def stream_thread(target_function, listener):

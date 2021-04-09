@@ -80,4 +80,5 @@ while True:
         pool.terminate()
         continue
     finally:
+        pool.close()
         pool.join()

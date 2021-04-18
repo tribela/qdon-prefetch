@@ -76,7 +76,9 @@ while True:
     pool = ThreadPool(len(streams))
     try:
         pool.map(functools.partial(stream_thread, listener=listener), streams)
-    except (mastodon.MastodonNetworkError):
+    except (
+            mastodon.MastodonNetworkError,
+            requests.ConnectionError):
         pool.terminate()
         continue
     finally:

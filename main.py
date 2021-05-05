@@ -41,12 +41,8 @@ class MediaFetcher(mastodon.StreamListener):
     @staticmethod
     def fetch(url):
         res = requests.get(url)
-        if res.headers.get('Server') == 'cloudflare':
-            cache_status = res.headers['CF-Cache-Status']
-            ray = res.headers['CF-Ray']
-        else:
-            cache_status = ''
-            ray = ''
+        cache_status = res.headers.get('CF-Cache-Status', '')
+        ray = res.headers.get('CF-Ray', '')
 
         s_print(
             f'{res.url} {res.reason}'
@@ -81,6 +77,7 @@ while True:
             requests.ConnectionError):
         pool.terminate()
         continue
+    except KeyboardInterrupt:
+        break
     finally:
         pool.close()
-        pool.join()

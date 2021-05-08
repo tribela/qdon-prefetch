@@ -12,7 +12,7 @@ from adapters import HostHeaderSSLAdapter
 MASTODON_URL = get_docker_secret('MASTODON_URL')
 ACCESS_TOKEN = get_docker_secret('MASTODON_ACCESS_TOKEN')
 MEDIA_HOST = get_docker_secret('MEDIA_HOST')
-MEDIA_IPS = get_docker_secret('MEDIA_IPS').split(',')
+MEDIA_IPS = get_docker_secret('MEDIA_IPS')
 
 s_print_lock = Lock()
 
@@ -35,7 +35,7 @@ class MediaFetcher(mastodon.StreamListener):
         ]
 
         if MEDIA_HOST and MEDIA_IPS:
-            for ip in MEDIA_IPS:
+            for ip in MEDIA_IPS.split(','):
                 s_print(f'Adding {ip}')
                 sess = requests.Session()
                 sess.mount(

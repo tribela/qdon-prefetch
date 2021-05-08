@@ -45,6 +45,7 @@ class MediaFetcher(mastodon.StreamListener):
                     })
                 )
                 self.sessions.append(sess)
+        self.pool = ThreadPool(len(self.sessions))
 
     def on_update(self, status):
         s_print(f'{status.id} {len(status.media_attachments)}')
@@ -56,20 +57,30 @@ class MediaFetcher(mastodon.StreamListener):
         medias = status.media_attachments
         if medias:
             s_print(f'Downloading {len(medias)} medias')
-        for media in medias:
-            self.fetch(media.url)
-            self.fetch(media.preview_url)
+            self.pool.starmap(
+                self.fetch,
+                [
+                    (sess, media.url)
+                    for sess in self.sessions
+                    for media in medias
+                ] +
+                [
+                    (sess, media.preview_url)
+                    for sess in self.sessions
+                    for media in medias
+                ]
+            )
 
-    def fetch(self, url):
-        for sess in self.sessions:
-            res = sess.get(url)
-            cache_status = res.headers.get('CF-Cache-Status', '')
-            ray = res.headers.get('CF-Ray', '')
+    @staticmethod
+    def fetch(session, url):
+        res = session.get(url)
+        cache_status = res.headers.get('CF-Cache-Status', '')
+        ray = res.headers.get('CF-Ray', '')
 
-            s_print(
-                f'{res.url} {res.reason}'
-                f' {res.elapsed.total_seconds():.3f}'
-                f' {cache_status} {ray}')
+        s_print(
+            f'{res.url} {res.reason}'
+            f' {res.elapsed.total_seconds():.3f}'
+            f' {cache_status} {ray}')
 
 
 def stream_thread(target_function, listener):

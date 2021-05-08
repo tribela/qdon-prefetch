@@ -1,4 +1,5 @@
 import functools
+import time
 from multiprocessing.pool import ThreadPool
 from threading import Lock
 
@@ -85,7 +86,7 @@ class MediaFetcher(mastodon.StreamListener):
 
 def stream_thread(target_function, listener):
     s_print(target_function.__name__)
-    target_function(listener, reconnect_async=True)
+    return target_function(listener, reconnect_async=True)
 
 
 api = mastodon.Mastodon(
@@ -109,5 +110,8 @@ while True:
         continue
     except KeyboardInterrupt:
         break
+    except Exception as e:
+        print(e)
+        time.sleep(1)
     finally:
         pool.close()

@@ -1,2 +1,2 @@
 .env
-docker-stack.yml
+__pycache__

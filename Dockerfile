@@ -12,4 +12,7 @@ RUN pip install poetry \
     && pip uninstall --yes poetry
 ADD . /src
 
+RUN useradd -m user
+USER user
+
 CMD ["python", "-u", "main.py"]

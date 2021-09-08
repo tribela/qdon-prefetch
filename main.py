@@ -79,9 +79,11 @@ class MediaFetcher(mastodon.StreamListener):
         ray = res.headers.get('CF-Ray', '')
 
         s_print(
-            f'{res.url} {res.reason}'
+            f'{res.reason}'
+            f' {cache_status:4s}'
             f' {res.elapsed.total_seconds():.3f}'
-            f' {cache_status} {ray}')
+            f' {ray} {res.url}'
+        )
 
 
 def stream_thread(target_function, listener):

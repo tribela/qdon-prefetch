@@ -15,6 +15,8 @@ ACCESS_TOKEN = get_docker_secret('MASTODON_ACCESS_TOKEN')
 MEDIA_HOST = get_docker_secret('MEDIA_HOST')
 MEDIA_IPS = get_docker_secret('MEDIA_IPS')
 
+DEBUG = get_docker_secret('DEBUG') is not None
+
 s_print_lock = Lock()
 
 
@@ -49,9 +51,10 @@ class MediaFetcher(mastodon.StreamListener):
         self.pool = ThreadPool(len(self.sessions))
 
     def on_update(self, status):
-        s_print(f'{status.id} {len(status.media_attachments)}')
+        if DEBUG:
+            s_print(f'{status.id} {len(status.media_attachments)}')
 
-        if status.reblog is not None:
+        if status.reblog is not None and DEBUG:
             status = status.reblog
             s_print(f'Reblog of {status.id} {len(status.media_attachments)}')
 

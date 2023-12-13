@@ -107,6 +107,7 @@ streams = [
 while True:
     pool = ThreadPool(len(streams))
     try:
+        print("Connecting…")
         pool.map(functools.partial(stream_thread, listener=listener), streams)
     except (
             mastodon.MastodonNetworkError,
@@ -117,6 +118,6 @@ while True:
         break
     except Exception as e:
         print(e)
-        time.sleep(1)
+        time.sleep(10)
     finally:
         pool.close()

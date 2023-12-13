@@ -48,6 +48,13 @@ class MediaFetcher(mastodon.StreamListener):
                     })
                 )
                 self.sessions.append(sess)
+
+        # Match the Accept-Encoding header with Firefox
+        for session in self.sessions:
+            session.headers.update({
+                'Accept-Encoding': 'gzip, deflate, br',
+            })
+
         self.pool = ThreadPool(len(self.sessions))
 
     def on_update(self, status):
